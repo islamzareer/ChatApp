@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "412949760191",
+    "project_id": "chatapp-db494",
+    "storage_bucket": "chatapp-db494.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412949760191:android:41a82edd28e99463c69e0a",
+        "android_client_info": {
+          "package_name": "com.example.messageme_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412949760191-qugj9gnt2so8q5qjfd6vbbev5u1d0rcg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK51jLF9AgohnmKn5--KZrp_oHngqyUWY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412949760191-qugj9gnt2so8q5qjfd6vbbev5u1d0rcg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "412949760191-gbl7bi50htf4vcorcrvk212kg6g3gqj5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.messagemeApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
