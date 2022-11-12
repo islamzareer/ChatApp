@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:messageme_app/screens/sign_in_screen.dart';
 import 'package:messageme_app/widgets/message_line.dart';
+import 'package:messageme_app/widgets/messages_stream_builder.dart';
 
 class ChatScreen extends StatefulWidget {
   static const screenRoute = "/ChatScreen";
@@ -11,13 +13,13 @@ class ChatScreen extends StatefulWidget {
   _ChatScreenState createState() => _ChatScreenState();
 }
 
-late User signedInUser;
-
 class _ChatScreenState extends State<ChatScreen> {
   final messageEditingController = TextEditingController();
+  late User signedInUser;
 
   final _auth = FirebaseAuth.instance;
   final _fireStore = FirebaseFirestore.instance;
+  bool doneGetUser = false;
 
   String? messageText;
   getCurrentUser() async {
@@ -26,6 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (user != null) {
         setState(() {
           signedInUser = user;
+          doneGetUser = true;
         });
 
         print(signedInUser.email);
@@ -59,7 +62,7 @@ class _ChatScreenState extends State<ChatScreen> {
               TextButton(
                   onPressed: () {
                     _auth.signOut();
-                    Navigator.pop(context);
+                    Navigator.pushNamed(context, SignInScreen.screenRoute);
                   },
                   child: const Text(
                     "LogOut",
@@ -72,7 +75,12 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                MessagesStreamBuilder(fireStore: _fireStore),
+                doneGetUser
+                    ? MessagesStreamBuilder(
+                        fireStore: _fireStore,
+                        signedInUser: signedInUser,
+                      )
+                    : const CircularProgressIndicator(),
                 Container(
                   decoration: const BoxDecoration(
                     border: Border(
@@ -133,46 +141,3 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
-class MessagesStreamBuilder extends StatelessWidget {
-  late FirebaseFirestore fireStore;
-
-  MessagesStreamBuilder({required this.fireStore});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: fireStore.collection('messages').orderBy('time').snapshots(),
-        builder: (context, snapshot) {
-          List<MessageLine> messageWidgets = [];
-          if (!snapshot.hasData) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.orange,
-              ),
-            );
-          }
-          final messages = snapshot.data!.docs.reversed;
-          for (var message in messages) {
-            final messageText = message.get('text');
-            final messageEmail = message.get('sender');
-            final messageWidget = MessageLine(
-              sender: messageEmail,
-              text: messageText,
-              isSender: messageEmail == signedInUser.email ? true : false,
-            );
-
-            messageWidgets.add(messageWidget);
-          }
-          return Expanded(
-            child: ListView.builder(
-              reverse: true,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              itemCount: messageWidgets.length,
-              itemBuilder: (context, index) {
-                return messageWidgets[index];
-              },
-            ),
-          );
-        });
-  }
-}
